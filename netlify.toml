@@ -1,0 +1,5 @@
+[build]
+  publish = "Frontend"
+
+# No redirects needed — index.html (pairing) and dashboard.html (dashboard)
+# are both served as-is, along with their CSS/JS/image assets.

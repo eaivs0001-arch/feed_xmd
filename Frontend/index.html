@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <title>FEED-XMD — Control Panel</title>
+    <link rel="shortcut icon" href="TA.png" type="image/png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body>
+    <div class="backdrop">
+      <img src="BG.png" alt="" class="backdrop__img" />
+      <div class="backdrop__scrim"></div>
+      <div class="backdrop__grid"></div>
+    </div>
+
+    <main class="stage">
+      <section class="console" role="region" aria-label="FEED-XMD control panel">
+        <!-- Header -->
+        <header class="console__header">
+          <img src="TA.png" alt="FEED-XMD" class="console__logo" />
+          <div class="console__heading">
+            <h1>FEED-XMD</h1>
+            <p class="console__tagline">WhatsApp automation console</p>
+          </div>
+          <div class="pill" id="statusPill">
+            <span class="pill__dot" id="statusDot"></span>
+            <span id="statusText">checking…</span>
+          </div>
+        </header>
+
+        <div id="serverRow" style="display:none;margin-top:10px">
+          <label class="pair__label" for="serverInput">Bot server URL</label>
+          <div class="pair__row">
+            <i class="fa-solid fa-server pair__icon"></i>
+            <input type="text" class="pair__input" id="serverInput" placeholder="https://your-bot-server.com" autocomplete="off" style="font-size:0.8rem" />
+          </div>
+          <button class="btn btn--ghost btn--sm" id="serverBtn" style="margin-top:8px">Save &amp; reload</button>
+        </div>
+
+        <!-- Feature chips -->
+        <ul class="chips" id="chipRow" aria-label="Bot capabilities"></ul>
+
+        <!-- Connection card -->
+        <div class="panel">
+          <div class="segmented" id="segmented" role="tablist">
+            <button class="segmented__opt active" id="tabQr" role="tab" aria-selected="true" onclick="switchTab('qr')">
+              <i class="fa-solid fa-qrcode"></i> QR code
+            </button>
+            <button class="segmented__opt" id="tabPair" role="tab" aria-selected="false" onclick="switchTab('pair')">
+              <i class="fa-solid fa-keyboard"></i> Pairing code
+            </button>
+            <span class="segmented__thumb" id="segmentedThumb"></span>
+          </div>
+
+          <!-- QR Tab -->
+          <div class="tab-content active" id="qrTab" role="tabpanel">
+            <div class="scanner">
+              <span class="scanner__corner scanner__corner--tl"></span>
+              <span class="scanner__corner scanner__corner--tr"></span>
+              <span class="scanner__corner scanner__corner--bl"></span>
+              <span class="scanner__corner scanner__corner--br"></span>
+              <div class="scanner__body" id="qrArea">
+                <div class="scanner__loading" id="qrLoading">
+                  <div class="spinner"></div>
+                  <p>Waiting for QR code…</p>
+                </div>
+                <img id="qrImage" class="scanner__image" alt="QR code" style="display:none" />
+              </div>
+            </div>
+            <p class="hint">
+              Open WhatsApp → <strong>Linked devices</strong> → <strong>Link a device</strong>, then scan.
+              Refreshes automatically.
+            </p>
+          </div>
+
+          <!-- Pairing Tab -->
+          <div class="tab-content" id="pairTab" role="tabpanel">
+            <div class="pair">
+              <label class="pair__label" for="phoneInput">WhatsApp number, with country code</label>
+              <div class="pair__row">
+                <i class="fa-solid fa-phone pair__icon"></i>
+                <input
+                  type="tel"
+                  class="pair__input"
+                  placeholder="918888888888"
+                  id="phoneInput"
+                  autocomplete="off"
+                  inputmode="numeric"
+                />
+              </div>
+              <button class="btn btn--primary" id="pairBtn" onclick="requestPairingCode()">
+                <span class="button__text">Get pairing code</span>
+                <i class="fa-solid fa-arrow-right-long"></i>
+              </button>
+
+              <div class="pair__result" id="pairResult" style="display:none">
+                <p class="pair__result-label">Your pairing code</p>
+                <p class="pair__code" id="pairCode"></p>
+                <button class="btn btn--ghost btn--sm" id="copyBtn" onclick="copyPairCode()">
+                  <i class="fa-regular fa-copy"></i> Copy
+                </button>
+                <p class="hint">Enter this in WhatsApp → Linked devices → Link with phone number instead</p>
+              </div>
+              <p class="error" id="pairError" style="display:none"></p>
+            </div>
+          </div>
+
+          <!-- Connected view -->
+          <div class="tab-content" id="connectedTab" style="display:none" role="tabpanel">
+            <div class="connected">
+              <i class="fa-solid fa-circle-check connected__icon"></i>
+              <p class="connected__text">Bot is connected</p>
+              <p class="hint">You can close this tab — FEED-XMD is running.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry -->
+        <dl class="telemetry" id="telemetry">
+          <div>
+            <dt>Reconnect attempts</dt>
+            <dd id="telReconnect">—</dd>
+          </div>
+          <div>
+            <dt>Health checks failed</dt>
+            <dd id="telHealth">—</dd>
+          </div>
+          <div>
+            <dt>Last update</dt>
+            <dd id="telUpdated">—</dd>
+          </div>
+        </dl>
+
+        <!-- Footer -->
+        <footer class="console__footer">
+          <p><a href="./dashboard.html">Open dashboard</a> &middot; Built on <a href="https://github.com/FantoX/Atlas-MD" target="_blank" rel="noopener">Baileys multi-device</a></p>
+          <ul class="socials" id="socialRow" aria-label="Social links"></ul>
+        </footer>
+      </section>
+    </main>
+
+    <script src="./config.js"></script>
+    <script src="./socials.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

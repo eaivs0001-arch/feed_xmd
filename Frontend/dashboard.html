@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <title>FEED-XMD — Dashboard</title>
+    <link rel="shortcut icon" href="TA.png" type="image/png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./dashboard.css" />
+  </head>
+  <body class="dash">
+    <div class="backdrop">
+      <img src="BG.png" alt="" class="backdrop__img" />
+      <div class="backdrop__scrim"></div>
+      <div class="backdrop__grid"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="./"><img src="TA.png" alt="" /><span>FEED-XMD</span></a>
+      <nav class="tabs" id="tabs" role="tablist">
+        <button class="tab active" data-tab="overview"><i class="fa-solid fa-gauge-high"></i> Overview</button>
+        <button class="tab" data-tab="commands"><i class="fa-solid fa-terminal"></i> Commands</button>
+        <button class="tab" data-tab="features"><i class="fa-solid fa-star"></i> Features</button>
+        <button class="tab" data-tab="keys"><i class="fa-solid fa-key"></i> API keys</button>
+        <button class="tab" data-tab="deploy"><i class="fa-solid fa-cloud-arrow-up"></i> Deploy</button>
+      </nav>
+      <div class="pill" id="statusPill"><span class="pill__dot" id="statusDot"></span><span id="statusText">checking…</span></div>
+    </header>
+
+    <main class="wrap">
+      <!-- Overview -->
+      <section class="view active" id="view-overview">
+        <div class="card" id="serverCard" style="display:none">
+          <h2>Bot server</h2>
+          <p class="muted">This page is being served from a different address than your bot. Enter your bot's URL (e.g. <code>https://your-server.com</code>) so the dashboard can reach it.</p>
+          <div class="row">
+            <input id="serverInput" class="input" placeholder="https://your-bot-server.com" autocomplete="off" />
+            <button class="btn btn--primary" id="serverBtn">Save</button>
+          </div>
+        </div>
+        <div class="grid stats" id="statGrid"></div>
+        <div class="card">
+          <h2>Live stats</h2>
+          <p class="muted">Message, group and memory numbers come from the protected API. Paste your <code>DASHBOARD_TOKEN</code> (from <code>.env</code>) to unlock them. It's kept only for this browser tab.</p>
+          <div class="row">
+            <input id="tokenInput" class="input mono" type="password" placeholder="DASHBOARD_TOKEN" autocomplete="off" />
+            <button class="btn btn--primary" id="tokenBtn">Load stats</button>
+          </div>
+          <p class="error" id="tokenError" style="display:none"></p>
+          <div class="grid stats" id="liveGrid"></div>
+        </div>
+        <div class="card">
+          <h2>Quick links</h2>
+          <div class="row wrap-row">
+            <a class="btn btn--ghost" href="./"><i class="fa-solid fa-qrcode"></i> Pair a device</a>
+            <a class="btn btn--ghost" href="/api/health"><i class="fa-solid fa-heart-pulse"></i> Health check</a>
+            <a class="btn btn--ghost" href="/api/commands"><i class="fa-solid fa-code"></i> Commands JSON</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Commands -->
+      <section class="view" id="view-commands">
+        <div class="card">
+          <div class="row">
+            <input id="cmdSearch" class="input" placeholder="Search commands…" autocomplete="off" />
+            <select id="statusFilter" class="input select">
+              <option value="all">All statuses</option>
+              <option value="active">Active</option>
+              <option value="restricted">Disabled</option>
+              <option value="placeholder">Placeholder</option>
+            </select>
+          </div>
+          <div class="chips" id="catChips"></div>
+          <p class="muted" id="cmdSummary">Loading commands…</p>
+          <div class="cmd-list" id="cmdList"></div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section class="view" id="view-features">
+        <div class="grid cards" id="featureGrid"></div>
+      </section>
+
+      <!-- API keys -->
+      <section class="view" id="view-keys">
+        <div class="card">
+          <h2>API keys</h2>
+          <p class="muted">The bot runs with <strong>none</strong> of these. Add only what you want. Set them in <code>.env</code> (or your host's environment variables).</p>
+          <div class="table-wrap"><table class="table" id="keyTable"></table></div>
+        </div>
+      </section>
+
+      <!-- Deploy -->
+      <section class="view" id="view-deploy">
+        <div class="grid cards" id="deployGrid"></div>
+        <div class="card">
+          <h2>Before you deploy</h2>
+          <ul class="list" id="deployNotes"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js"></script>
+    <script src="./dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+# Render FREE web service. Read the caveats in DEPLOYMENT.md first:
+# free services have a temporary disk, so the WhatsApp session is lost on
+# every restart/redeploy (you must re-pair). For a bot that stays paired,
+# use a VM instead (see deploy/oracle-setup.sh).
+#
+# Idle sleep is handled automatically: the bot self-pings its own /ping
+# every 10 minutes using RENDER_EXTERNAL_URL, which Render injects into
+# every service by default — nothing to add here.
+services:
+  - type: web
+    name: feed-xmd-bot
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev --no-audit --no-fund
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BOT_NAME
+        value: FEED XMD
+      - key: OWNER_NUMBER
+        sync: false
+      - key: DASHBOARD_TOKEN
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
